@@ -1,0 +1,74 @@
+const predefinedColors = {
+	'AA': '#0000FF', // The key values can be any string and are not limited to two characters.
+	'BB': '#008800',
+};
+const pages = [
+	{
+		title: 'Title.',
+		// No panel image specified, defaults to #####.gif where the #s stand in for the page number.
+		content: [
+			{
+				text: "Normal paragraph text is the default when \"type\" is unspecified.<br><br>Line breaks using &lt;br&gt;<!-- Remember to escape angle brackets when you want to show them in the text! -->.",
+			},
+			{
+				type: 'log',
+				logType: 'Anythinglog', // If left off, defaults to "Pesterlog".
+				text:
+					color('AA', "Text can be colored using predefined colors with short names.") + '<br>' +
+					specificColor('#0055AC', "One off colors can be specified with an exact hex code or other valid CSS color.") + '<br>' +
+				'',
+			},
+		],
+	},
+	{
+		title: '==>',
+		panels: '00002.png', // Overrides the default panel filename.
+		content: [
+			{
+				text: `Paragraphs can have <i>styles</i> <strike>applied</strike> using <u>HTML tags</u>.<br><br>${ color('BB', "Colors work too!") }`,
+			},
+		],
+	},
+	{
+		title: '==>',
+		panelCount: 2, // Sets the number of panels on a page while still using default filenames.
+	},
+	{
+		title: '==>',
+		panels: ['00004_1.png', '00004_2.png'], // Overrides the default panel filenames for pages with multiple panels.
+	},
+	{
+		title: '[S] ==>',
+		soundPage: '00005.mp4',
+		content: [
+			{
+				type: 'credit',
+				text: 'Artist - Track Title',
+				link: 'https://example.com',
+			},
+			{
+				text: "This is just for an example on how to set up sound pages. No video displays here because no video file at this location is included.",
+			},
+		],
+	},
+];
+
+
+
+
+// Page markup utilities
+function color(textColorKey, text) {
+	return specificColor(predefinedColors[textColorKey], text);
+}
+
+function specificColor(textColor, text) {
+	return `<span style="color:${ textColor }">${ text }</span>`;
+}
+
+function htmlEscape(str) {
+	return str.replace(/&/g, '&amp;')
+		.replace(/</g, '&lt;')
+		.replace(/>/g, '&gt;')
+		.replace(/"/g, '&quot;')
+		.replace(/'/g, '&#39;');
+}
