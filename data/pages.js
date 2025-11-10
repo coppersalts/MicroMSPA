@@ -32,6 +32,14 @@ const pages = [
 	{
 		title: '==>',
 		panelCount: 2, // Sets the number of panels on a page while still using default filenames.
+		content: [
+			{
+				type: 'authorlog',
+				text:
+					`Authorlogs can be added using the ${ specificColor('#AA0000', 'authorlog') } type.` + '<br>' +
+				'',
+			},
+		],
 	},
 	{
 		title: '==>',
