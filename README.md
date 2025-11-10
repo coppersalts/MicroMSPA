@@ -4,7 +4,7 @@ MicroMSPA is a lightweight tool for making MSPA-styled stories to be read offlin
 ## Viewing
 To view a MicroMSPA, simply open the HTML file in your web browser of choice.
 
-## Creation guide
+## Creation
 The data for each page's contents is located in `data/pages.js`. An example is placed in there with all the features displayed which should help guide you on how to set up pages.
 
 All images and sound pages should be placed in `data/images/panels`.
