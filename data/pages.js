@@ -98,7 +98,7 @@ const pages = [
 		panelCount: 0,
 		content: [
 			{
-				text: 'This is the SECRET PAGE!<br><br>The page with the passwordbox had its next button hidden.',
+				text: 'This is the SECRET PAGE!<br><br>The page with the password box had its next button hidden.<br><br>Do note: Pages after ones without next buttons can still be accessed easilly by changing the page number in the URL.',
 			},
 		],
 	},
