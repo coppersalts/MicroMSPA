@@ -46,6 +46,14 @@ const pages = [
 	{
 		title: '==>',
 		panels: ['00004_1.png', '00004_2.png'], // Overrides the default panel filenames for pages with multiple panels.
+		content: [
+			{
+				text: `Use type ${ specificColor('#AA0000', 'panel') } to move a panel into the middle of text.`,
+			},
+			{
+				type: 'panel',
+			},
+		],
 	},
 	{
 		title: '[S] ==>',

@@ -44,40 +44,57 @@
 			function displayPage() {
 				window.scrollTo(0, 0);
 				document.querySelector('.mediaContent .pageTitle').innerHTML = htmlEscape(pages[currentPage].title)
+
+				let midPanelsCount = 0;
+				const textContentData = pages[currentPage].content ?? [];
+				for (let i = 0; i < textContentData.length; i++) {
+					if (textContentData[i].type == 'panel') {
+						midPanelsCount++;
+					}
+				}
+
+				const panelsHTML = [];
 				if (pages[currentPage].soundPage) {
 					document.querySelector('.mediaContent .media').innerHTML = `<video controls width="650"><source src="data/images/panels/${ pages[currentPage].soundPage }"></video>`;
 				} else {
-					let panels = '';
+					let panelFilenames = [];
 					if (pages[currentPage].panels == null) {
 						const panelCount = pages[currentPage].panelCount ?? 1;
 						for (let i = 0; i < panelCount; i++) {
-							panels += `<img src="data/images/panels/${ (currentPage+1).toString().padStart(5, '0') + (panelCount > 1 ? '_' + (i+1) : '') }.gif" class=panel>`;
+							panelFilenames[i] = (currentPage+1).toString().padStart(5, '0') + (panelCount > 1 ? '_' + (i+1) : '') + '.gif';
 						}
 					} else {
 						let panelsList = pages[currentPage].panels;
 						if (!Array.isArray(panelsList)) panelsList = [panelsList];
-						for (let i = 0; i < panelsList.length; i++) {
-							panels += `<img src="data/images/panels/${ panelsList[i] }" class=panel>`;
-						}
+						panelFilenames = panelsList;
 					}
-					document.querySelector('.mediaContent .media').innerHTML = panels;
+					midPanelsCount = Math.min(midPanelsCount, panelFilenames.length);
+					for (let i = 0; i < panelFilenames.length; i++) {
+						panelsHTML[i] = `<img src="data/images/panels/${ panelFilenames[i] }" class=panel>`;
+					}
+					document.querySelector('.mediaContent .media').innerHTML = panelsHTML.slice(0, panelFilenames.length - midPanelsCount).join('');
 				}
+
 				let textContent = '';
-				for (let i = 0; i < (pages[currentPage].content ?? []).length; i++) {
-					const text = pages[currentPage].content[i].text;
-					switch (pages[currentPage].content[i].type) {
+				let midPanelIndex = panelsHTML.length - midPanelsCount;
+				for (let i = 0; i < textContentData.length; i++) {
+					switch (textContentData[i].type) {
 						default:
 						case 'prattle':
-							textContent += `<p class=prattle>${ text }</p>`
+							textContent += `<p class=prattle>${ textContentData[i].text }</p>`
+							break;
+						case 'panel':
+							textContent += panelsHTML[midPanelIndex];
+							midPanelIndex++;
 							break;
 						case 'authorlog':
-							textContent += `<div class=authorlog><p class=logContent>${ text }</p></div>`
+							textContent += `<div class=authorlog><p class=logContent>${ textContentData[i].text }</p></div>`
 							break;
 						case 'log':
-							textContent += `<details class=log><summary>${ pages[currentPage].content[i].logType ?? 'Pesterlog' }</summary><p class=logContent>${ text }</p></details>`
+							textContent += `<details class=log><summary>${ textContentData[i].logType ?? 'Pesterlog' }</summary><p class=logContent>${ textContentData[i].text }</p></details>`
 							break;
 						case 'credit':
-							textContent += `<div class="creditWrapper"><a target="_blank" rel="noopener noreferrer" href="${ pages[currentPage].content[i].link ?? '' }" class="frame"><span class="icon"><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="music" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="svg-inline--fa fa-music"><path data-v-03df3002="" fill="currentColor" d="M499.1 6.3c8.1 6 12.9 15.6 12.9 25.7v72V368c0 44.2-43 80-96 80s-96-35.8-96-80s43-80 96-80c11.2 0 22 1.6 32 4.6V147L192 223.8V432c0 44.2-43 80-96 80s-96-35.8-96-80s43-80 96-80c11.2 0 22 1.6 32 4.6V200 128c0-14.1 9.3-26.6 22.8-30.7l320-96c9.7-2.9 20.2-1.1 28.3 5z" class=""></path></svg></span><div class="credit"><span class="marquee">${ text }</span></div></a></div>`
+							textContent += `<div class="creditWrapper"><a target="_blank" rel="noopener noreferrer" href="${ textContentData[i].link ?? '' }" class="frame"><span class="icon"><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="music" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="svg-inline--fa fa-music"><path data-v-03df3002="" fill="currentColor" d="M499.1 6.3c8.1 6 12.9 15.6 12.9 25.7v72V368c0 44.2-43 80-96 80s-96-35.8-96-80s43-80 96-80c11.2 0 22 1.6 32 4.6V147L192 223.8V432c0 44.2-43 80-96 80s-96-35.8-96-80s43-80 96-80c11.2 0 22 1.6 32 4.6V200 128c0-14.1 9.3-26.6 22.8-30.7l320-96c9.7-2.9 20.2-1.1 28.3 5z" class=""></path></svg></span><div class="credit"><span class="marquee">${ textContentData[i].text }</span></div></a></div>`
 					}
 				}
 				textContent += '<nav>';
@@ -150,7 +167,8 @@
 				align-items: center;
 				flex-flow: column;
 			}
-			.pageFrame .pageContent .mediaContent .media .panel:not(:last-child) {
+			/*.pageFrame .pageContent .mediaContent .media .panel:not(:last-child) {*/
+			.panel:has( + .panel) {
 				margin-bottom: 20px;
 			}
 			.pageTitle {
@@ -170,9 +188,15 @@
 			}
 			.textContent {
 				margin-top: 30px;
-				width: 600px;
 				display: flex;
 				flex-direction: column;
+			}
+			.textContent > :not(.panel, .creditWrapper) {
+				margin-left: calc((650px - 600px) / 2);
+				margin-right: calc((650px - 600px) / 2);
+			}
+			.textContent > .panel + :not(.panel) {
+				margin-top: 30px;
 			}
 			.prattle {
 				width: 600px;
@@ -293,7 +317,8 @@
 			.creditWrapper {
 				width: -moz-min-content;
 				width: min-content;
-				max-width: 100%;
+				/*max-width: 100%;*/
+				max-width: 600px;
 				margin: 0 auto 30px;
 				padding: 2px;
 				background-color: #ff9000;
